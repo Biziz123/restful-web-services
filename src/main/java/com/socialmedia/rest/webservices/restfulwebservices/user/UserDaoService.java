@@ -21,6 +21,15 @@ public class UserDaoService {
 	public List<User> findAll(){
 		return users;
 	}
+
+	public User findUser(int id) {
+		for(User a:users) {
+			if(a.getId()==id) {
+				return a;
+			}
+		}
+		return null;
+	}
 	
 	
 			}
