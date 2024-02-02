@@ -1,5 +1,6 @@
 package com.socialmedia.rest.webservices.restfulwebservices.user;
 
+//User information in Social media app
 import java.time.LocalDate;
 
 public class User {
