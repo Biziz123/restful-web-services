@@ -24,6 +24,14 @@ public class UserDaoService {
 		return users;
 	}
 
+	public void deleteById(int id) {
+		for(User a:users) {
+			if(a.getId()==id) {
+				users.remove(a);
+			}
+		}
+	}
+	
 	public User findUser(int id) {
 		for(User a:users) {
 			if(a.getId()==id) {
