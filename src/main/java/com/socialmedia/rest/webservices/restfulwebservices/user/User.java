@@ -3,14 +3,20 @@ package com.socialmedia.rest.webservices.restfulwebservices.user;
 //User information in Social media app
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
+
+@JsonFilter("mybean")
 public class User {
 	
 	private Integer id;
 	
 	@Size(min=2,message="Name Should have atleast 2 characters")
+	@JsonProperty("user_name")
 	private String name;
 	
 	@Past(message="Birth Date should be in the Past")
