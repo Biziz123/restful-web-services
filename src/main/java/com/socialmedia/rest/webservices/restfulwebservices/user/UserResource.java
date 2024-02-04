@@ -3,6 +3,9 @@ package com.socialmedia.rest.webservices.restfulwebservices.user;
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,12 +32,17 @@ public class UserResource {
 		return service.findAll();
 	}
 	@GetMapping("/user/{id}")
-	public User findUser(@PathVariable int id){
+	public EntityModel<User> findUser(@PathVariable int id){
 		User user= service.findUser(id);
 		if(user==null) {
 			throw new UserNotFoundException("id:" + id) ;
 		}
-		return user;
+		
+		EntityModel<User> entityModel = EntityModel.of(user);
+		WebMvcLinkBuilder link =  linkTo(methodOn(this.getClass()).retrieveAllUsers());
+		entityModel.add(link.withRel("all-users"));
+		
+		return entityModel;
 	}
 	
 	@DeleteMapping("/user/{id}")
