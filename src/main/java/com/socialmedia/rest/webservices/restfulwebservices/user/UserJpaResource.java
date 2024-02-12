@@ -20,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.socialmedia.rest.webservices.restfulwebservices.jpa.PostRepository;
 import com.socialmedia.rest.webservices.restfulwebservices.jpa.UserRepository;
 
 import jakarta.validation.Valid;
@@ -29,10 +30,13 @@ public class UserJpaResource {
   
 	
 	private UserRepository repository;
+	private PostRepository postrepository;
 	
-	public UserJpaResource(UserRepository repository) {
+	public UserJpaResource(UserRepository repository,PostRepository postrepository) {
 		this.repository=repository;
+		this.postrepository=postrepository;
 	}
+	
 	
 	@GetMapping("/jpa/users")
 	public MappingJacksonValue retrieveAllUsers(){
@@ -67,6 +71,30 @@ public class UserJpaResource {
 	@DeleteMapping("/jpa/user/{id}")
 	public void deleteUser(@PathVariable int id){
 		repository.deleteById(id);
+	}
+	@GetMapping("/jpa/user/{id}/posts")
+	public List<Post> retrievePostsForUser(@PathVariable int id){
+		Optional<User> user= repository.findById(id);
+ 		if(user.isEmpty()) {
+			throw new UserNotFoundException("id:" + id) ;
+		}
+ 		return user.get().getPosts();
+	}
+	
+	@PostMapping("/jpa/user/{id}/posts")
+	public ResponseEntity<Object> CreatePostsForUser(@PathVariable int id,@Valid @RequestBody Post post){
+		Optional<User> user= repository.findById(id);
+ 		if(user.isEmpty()) {
+			throw new UserNotFoundException("id:" + id) ;
+		}
+ 		post.setUser(user.get());
+ 		Post savedpost=postrepository.save(post);
+ 		
+ 		URI location = 	ServletUriComponentsBuilder.fromCurrentRequest()
+		        .path("/{id}")
+		        .buildAndExpand(savedpost.getId())
+		        .toUri();
+return ResponseEntity.created(location).build();
 	}
 	
 	@PostMapping("/jpa/user")
